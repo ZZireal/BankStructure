@@ -1,19 +1,21 @@
+import Entity.*;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
 
-public class BankLogic {
+class BankLogic {
 
     private List<Client> clientList = new ArrayList<>();
     private List<Account> accountList = new ArrayList<>();
 
+    //инициализация клиентов и счетов для примера
     void initStartUsers() {
         //создание клиентов
-        Client cl1 = new PersonClient(1, "Генри Кавилл", "физическое лицо", "1985-05-09");
-        Client cl2 = new CompanyClient(2, "Bartolomeo Inc.", "юрюдическое лицо", "1996-07-14");
-        Client cl3 = new PersonClient(3, "Леонардо Ди Каприо", "физическое лицо", "1976-03-27");
-        Client cl4 = new PersonClient(4, "Двадцать Пятый Баам", "физическое лицо", "1976-03-27");
+        Client cl1 = new PersonClient(1, "физическое лицо", "Генри Кавилл", "1985-05-09");
+        Client cl2 = new CompanyClient(2, "юридичесое лицо", "Bartolomeo Inc.", "1996-07-14");
+        Client cl3 = new PersonClient(3, "физическое лицо", "Леонардо Ди Каприо", "1976-03-27");
+        Client cl4 = new PersonClient(4, "физическое лицо", "Двадцать Пятый Баам", "1976-03-27");
 
         //создание счетов
         Account acc1 = new DepositAccount(true, 100.56, "AT42552003", "отзывный", 0.8);
@@ -43,147 +45,142 @@ public class BankLogic {
         clientList.add(cl4);
     }
 
-    public boolean ifClientExists(int identifier) {
+    //проверка существует ли клиент с данным идентификатором
+    boolean ifClientExists(int identifier) {
         //проверка, если клиент существует - остановить метод
         boolean exist = false;
         for (Client client : clientList) {
             if (identifier == client.getIdentifier()) {
                 exist = true;
-                return exist;
+                break;
             }
         }
-        return false;
+        return exist;
     }
 
-    public void createPersonClient(int identifier, String name, String type, String dateOfBirth) {
-        try {
-            // scanner in main, принимает объекты (везде, где сканнер так седлать)
-            Client client = new PersonClient(identifier, name, type, dateOfBirth);
-            clientList.add(client);
-            System.out.print("Клиент успешно создан!");
-        } catch (Exception ex) {
-            System.out.println("Введены некорретные данные!");
-        }
-    }
-
-    public void createCompanyClient(int identifier, String name, String type, String dateOfRegistration) {
-        try {
-            // scanner in main, принимает объекты (везде, где сканнер так седлать)
-            Client client = new CompanyClient(identifier, name, type, dateOfRegistration);
-            clientList.add(client);
-            System.out.print("Клиент успешно создан!");
-        } catch (Exception ex) {
-            System.out.println("Введены некорретные данные!");
-        }
-    }
-
-    public void createDepositAccount() {
-        try {
-            Scanner scanner = new Scanner(System.in);
-
-            System.out.print("\nВыберите ID клиента: ");
-            for (Client client : clientList) {
-                System.out.println(client);
+    //проверка существует ли счет с данным номером
+    boolean ifAccountNumberExists(String number) {
+        //проверка, если клиент существует - остановить метод
+        boolean exist = false;
+        for (Account account : accountList) {
+            if (number.equals(account.getNumber())) {
+                exist = true;
+                break;
             }
-            int identifier = Integer.parseInt(scanner.nextLine());
-            for (Client client : clientList) {
-                if (identifier == client.getIdentifier()) {
-                    System.out.print("\nВведите true или false, чтобы счет был активным или заблокированным: ");
-                    boolean active = Boolean.parseBoolean(scanner.nextLine());
-                    System.out.print("Введите сумму счета: ");
-                    double balance = Double.parseDouble(scanner.nextLine());
-                    System.out.print("Введите номер счета: ");
-                    String number = scanner.nextLine();
-                    System.out.print("Введите тип счета: ");
-                    String type = scanner.nextLine();
-                    System.out.print("Введите процентную ставку: ");
-                    int percent = Integer.parseInt(scanner.nextLine());
-                    DepositAccount acc = new DepositAccount(active, balance, number, type, percent);
-                    client.addAccount(acc);
-                    accountList.add(acc);
-                    System.out.print("\n" +
-                            "Счет успешно создан!\n" +
-                            "ID клиента - '" + client.getIdentifier() + ":\n" + acc);
-                    return;
-                }
+        }
+        return exist;
+    }
+
+    //создание клиента как физического лица
+    void createPersonClient(int identifier, String type, String name, String dateOfBirth) {
+        // scanner in main, принимает объекты (везде, где сканнер так седлать)
+        Client client = new PersonClient(identifier, type, name, dateOfBirth);
+        clientList.add(client);
+    }
+
+    //создание клиента как юридического
+    void createCompanyClient(int identifier, String type, String name, String dateOfRegistration) {
+        // scanner in main, принимает объекты (везде, где сканнер так седлать)
+        Client client = new CompanyClient(identifier, type, name, dateOfRegistration);
+        clientList.add(client);
+    }
+
+    //создание депозитного счета
+    void createDepositAccount(int identifier, boolean active, double balance, String number, String type, double percent) {
+        for (Client client : clientList) {
+            if (identifier == client.getIdentifier()) {
+                Account acc = new DepositAccount(active, balance, number, type, percent);
+                client.addAccount(acc);
+                accountList.add(acc);
+                return;
             }
-            System.out.print("Клиент не существует!");
-        } catch (Exception ex) {
-            System.out.println("Введены некорретные данные!");
         }
     }
 
-    public void getClients() {
-        //сделать ретурн, это логика, не надо вывод
+    //создание карточного счета
+    void createCardAccount(int identifier, boolean active, double balance, String number, double monthPayment) {
+        for (Client client : clientList) {
+            if (identifier == client.getIdentifier()) {
+                Account acc = new CardAccount(active, balance, number, monthPayment);
+                client.addAccount(acc);
+                accountList.add(acc);
+                return;
+            }
+        }
+    }
+
+    //создание кредитного счета
+    void createCreditAccount(int identifier, boolean active, double balance, String number, String type, double percent) {
+        for (Client client : clientList) {
+            if (identifier == client.getIdentifier()) {
+                Account acc = new CreditAccount(active, balance, number, type, percent);
+                client.addAccount(acc);
+                accountList.add(acc);
+                return;
+            }
+        }
+    }
+
+    //вернуть лист клиентов
+    List<Client> getClients() {
+        return clientList;
+    }
+
+    //вывести клиентов
+    void printClients(List<Client> clientList) {
         for (Client client : clientList) {
             System.out.print(client);
         }
     }
 
-    public void getAllBankAccounts() {
+    //вернуть лист счетов
+    List<Account> getAccounts() {
+        return accountList;
+    }
+
+    //вывести счета
+    void printAccounts(List<Account> accountList) {
         for (Account account : accountList) {
             System.out.print(account);
         }
     }
 
-    /*public void setActiveAccount() {
-        try {
-            Scanner scanner = new Scanner(System.in);
-            Client client1 = null;
-
-            System.out.print("Выберите ID клиента: \n");
-            for (Client client : clientList) {
-                System.out.print(client);
-            }
-
-            int identifier = scanner.nextInt();
-            for (Client client : clientList) {
-                if (identifier == client.getIdentifier()) {
-                    client1 = client;
-                }
-            }
-
-            if (client1 != null) {
-                int i = 1;
-                for (Object account : client1.getBankAccountArrayList()) {
-                    System.out.print(i + ") " + account);
-                    i++;
-                }
-            }
-
-            Scanner scannerInt = new Scanner(System.in);
-            System.out.print("\nВыберите счет: ");
-            int number = scannerInt.nextInt();
-            System.out.print("Введите статус: ");
-            Scanner scannerBoolean = new Scanner(System.in);
-            boolean status = scannerBoolean.nextBoolean();
-            assert client1 != null;
-            client1.getBankAccountArrayList().get(number - 1).setActive(status);
-            System.out.print("Установлен статус " + status + " для счета!");
-        } catch (Exception ex) {
-            System.out.println("Введены некорретные данные!");
-        }
-    }
-*/
-    /*
-    static public void printBankAccountsPerson() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Введите идентификатор клиента, счета которого необходимо вывести: ");
-        int identifier = scanner.nextInt();
-        int i = 1;
-        for (BankClient bc : bankClientsList) {
-            if (identifier == bc.getIdentifier()) {
-                for (BankAccount ba : bc.getBankAccountArrayList()) {
-                    System.out.println(i + ") " + ba);
-                    i++;
-                }
+    void setActiveAccount(String number, boolean status) {
+        for (Account account : accountList) {
+            if (number.equals(account.getNumber())) {
+                account.setActive(status);
             }
         }
     }
-    */
 
-    public void getAllSortedAccounts() {
+    //вернуть имя (название) клиента
+    String getNameOrTitleById(int identifier) {
+        List<PersonClient> personClientList = new ArrayList<>();
+        List<CompanyClient> companyClientList = new ArrayList<>();
+
+        for (Client client : clientList) {
+            if (client instanceof PersonClient) {
+                personClientList.add((PersonClient) client);
+            }
+            if (client instanceof CompanyClient) {
+                companyClientList.add((CompanyClient) client);
+            }
+        }
+        for (PersonClient personClient : personClientList) {
+            if (identifier == personClient.getIdentifier()) {
+                return personClient.getPersonName();
+            }
+        }
+        for (CompanyClient companyClient : companyClientList) {
+            if (identifier == companyClient.getIdentifier()) {
+                return companyClient.getCompanyTitle();
+            }
+        }
+        return null;
+    }
+
+    //отсортировать лист счетов
+    List<Account> getSortedAccounts() {
         Comparator<Account> c = new Comparator<>() {
             @Override
             public int compare(Account bankAccount1, Account bankAccount2) {
@@ -197,46 +194,45 @@ public class BankLogic {
             }
         };
         accountList.sort(c);
-        getAllBankAccounts();
+        return accountList;
     }
 
-    public void getSumAllAccounts() {
-        //тоже не вывод а ретурн
-
+    //вернуть сумму всех счетов
+    double getSumAllAccounts() {
         double sum = 0;
         for (Account ba : accountList) {
             sum += ba.getBalance();
         }
-        System.out.print("Сумма всех счетов: " + sum);
+        return sum;
     }
 
-    public void getSumPositiveNegativeAccounts() {
+    //вернуть сумму положительных счетов
+    double getSumPositiveAccounts() {
         double sumPositive = 0;
+        for (Account ba : accountList) {
+            if (ba.getBalance() > 0) sumPositive += ba.getBalance();
+        }
+        return sumPositive;
+    }
+
+    //вернуть сумму отрицательных счетов
+    double getSumNegativeAccounts() {
         double sumNegative = 0;
         for (Account ba : accountList) {
-            if (ba.getBalance() >= 0) sumPositive += ba.getBalance();
-            else sumNegative += ba.getBalance();
+            if (ba.getBalance() < 0) sumNegative += ba.getBalance();
         }
-        System.out.println("Сумма положительных счетов: " + sumPositive);
-        System.out.print("Сумма отрицательных счетов: " + sumNegative);
+        return sumNegative;
     }
 
-    /*public void searchAccountOfPerson() {
-        Scanner scanner = new Scanner(System.in);
-//тоже ретурн
-        System.out.print("Введите ФИО клиента, счета которого необходимо вывести: ");
-        String name = scanner.nextLine();
-        int i = 1;
-        boolean exist = false;
+    //вернуть лист счетов клиента по имени (названию)
+    List<Account> getAccountsOfPerson(String name) {
         for (Client client : clientList) {
-            if (name.equals(client.getPersonName())) {
-                exist = true;
-                for (Account account : client.getBankAccountArrayList()) {
-                    System.out.println("  " + i + ") " + account);
-                    i++;
-                }
+            if (name.equals(getNameOrTitleById(client.getIdentifier()))) {
+                return client.getAccountList();
             }
         }
-        if (!exist) System.out.println("Клиент не существует!");
-    }*/
+        return null;
+    }
 }
+
+

@@ -1,3 +1,7 @@
+package Entity;
+
+import Entity.Account;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +32,11 @@ abstract public class Client {
         this.type = type;
     }
 
-    void addAccount(Account account) {
+    public void addAccount(Account account) {
         this.accountList.add(account);
     }
 
-    public List getAccountList() {
+    public List<Account> getAccountList() {
         return accountList;
     }
 

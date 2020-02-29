@@ -30,24 +30,24 @@ class Main {
         Scanner scanner = new Scanner(System.in);
         bankLogic.initStartUsers();
 
-        boolean consol = true;
-        while (consol) {
-                System.out.println("\n\nВыберите: ");
-                System.out.println(
-                        "1. Создать клиента" + "\n" +
-                                "2. Создать счет" + "\n" +
-                                "3. Просмотреть список клиентов" + "\n" +
-                                "4. Просмотреть список счетов" + "\n" +
-                                "5. Установить статус счета" + "\n" +
-                                "6. Поиск счетов по имени клиента" + "\n" +
-                                "7. Просмотреть отсортированные счета" + "\n" +
-                                "8. Общая СУММА по счетам" + "\n" +
-                                "9. СУММА по положительным и отрицательным счетам" + "\n" +
-                                "0. Выйти" + "\n");
-                int chose = scanner.nextInt();
-                switch (chose) {
-                    case 1:
-                        //создание клиента
+        while (true) {
+            System.out.println("\n\nВыберите: ");
+            System.out.println(
+                    "1. Создать клиента" + "\n" +
+                            "2. Создать счет" + "\n" +
+                            "3. Просмотреть список клиентов" + "\n" +
+                            "4. Просмотреть список счетов" + "\n" +
+                            "5. Установить статус счета" + "\n" +
+                            "6. Поиск счетов по имени клиента" + "\n" +
+                            "7. Просмотреть отсортированные счета" + "\n" +
+                            "8. Общая СУММА по счетам" + "\n" +
+                            "9. СУММА по положительным и отрицательным счетам" + "\n" +
+                            "0. Выйти" + "\n");
+            int chose = scanner.nextInt();
+            switch (chose) {
+                case 1:
+                    //создание ID клиента
+                    try {
                         Scanner scannerClient = new Scanner(System.in);
                         System.out.print("\nВведите ID клиента: ");
                         int identifier = Integer.parseInt(scannerClient.nextLine());
@@ -58,65 +58,180 @@ class Main {
                             break;
                         }
 
-                        System.out.print("Введите ФИО клиента: ");
+                        //создание имени клиента
+                        System.out.print("Введите имя клиента (или название организации): ");
                         String name = scannerClient.nextLine();
 
-                        System.out.print("Введите тип клиента (юридическое лицо или физическое лицо): ");
+                        //создание типа клиента
+                        System.out.print("Введите тип клиента (юридическое или физическое лицо): ");
                         String type = scannerClient.nextLine();
+
+                        //создание типа клиента и соответствующего Person или Company, если не соответствует - break
                         if (type.equals("физическое")) {
                             System.out.print("Введите дату рождения клиента (ГГГГ-ММ-ДД): ");
                             String dateOfBirth = scannerClient.nextLine();
-                            bankLogic.createPersonClient(identifier, name, type, dateOfBirth);
+                            bankLogic.createPersonClient(identifier, type, name, dateOfBirth);
+                            System.out.print("Клиент успешно создан!");
                             break;
-                        } else
-                            if (type.equals("юридическое")) {
-                                System.out.print("Введите дату регистрации клиента (ГГГГ-ММ-ДД): ");
-                                String dateOfRegistration = scannerClient.nextLine();
-                                bankLogic.createCompanyClient(identifier, name, type, dateOfRegistration);
-                                break;
-                            }
-                            else {
-                                System.out.print("Некорретный тип клиента!");
-                                break;
-                            }
-                    case 2:
-                        //создание счета
-                        bankLogic.createDepositAccount();
-                        break;
-                    case 3:
-                        //просмотр всех клиентов
-                        bankLogic.getClients();
-                        break;
-                    case 4:
-                        //просмотр всех счетов
-                        bankLogic.getAllBankAccounts();
-                        break;
-                    case 5:
-                        //блокировка и разблокировка счета
-                       // menu.setActiveAccount();
-                        break;
-                    case 6:
-                        //поиск счетов по имени клиента
-                     //   menu.searchAccountOfPerson();
-                        break;
-                    case 7:
-                        //просмотр отсортированных счетов
-                        bankLogic.getAllSortedAccounts();
-                        break;
-                    case 8:
-                        //просмотр суммы всех счетов
-                        bankLogic.getSumAllAccounts();
-                        break;
-                    case 9:
-                        //просмотр положительной и отрицательной сумм всех счетов
-                        bankLogic.getSumPositiveNegativeAccounts();
-                        break;
-                    case 0:
-                        consol = false;
-                        break;
-                    default:
+                        } else if (type.equals("юридическое")) {
+                            System.out.print("Введите дату регистрации клиента (ГГГГ-ММ-ДД): ");
+                            String dateOfRegistration = scannerClient.nextLine();
+                            bankLogic.createCompanyClient(identifier, type, name, dateOfRegistration);
+                            System.out.print("Клиент успешно создан!");
+                            break;
+                        } else {
+                            System.out.print("Некорретный тип клиента!");
+                            break;
+                        }
+                    } catch (Exception ex) {
                         System.out.println("Введены некорретные данные!");
-                }
+                    }
+                case 2:
+                    //создание счета
+                    try {
+                        //создание ID
+                        Scanner scannerAccount = new Scanner(System.in);
+                        System.out.print("\nВыберите ID клиента: ");
+                        bankLogic.printClients(bankLogic.getClients());
+
+                        int identifier = Integer.parseInt(scannerAccount.nextLine());
+
+                        //проверка - если клиент не существует
+                        if (!bankLogic.ifClientExists(identifier)) {
+                            System.out.print("Клиент не существует!\n");
+                            break;
+                        }
+
+                        //выбор вида счета
+                        System.out.println("\nВыберите вид счета:\n1. Карточный\n2. Депозитный\n3. Кредитный");
+                        int choseKind = Integer.parseInt(scannerAccount.nextLine());
+                        String type = "";
+                        double monthPayment = 0, percent = 0;
+
+                        //в соответсвии с видом счета предлагает выбрать тип, процентную ставку/абон. плату
+                        switch (choseKind) {
+                            case 1:
+                                System.out.print("Введите абонентскую плату: ");
+                                monthPayment = Double.parseDouble(scannerAccount.nextLine());
+                                break;
+                            case 2:
+                                System.out.print("Введите тип депозитного счета: ");
+                                type = scannerAccount.nextLine();
+                                System.out.print("Введите процентную ставку: ");
+                                percent = Double.parseDouble(scannerAccount.nextLine());
+                                break;
+                            case 3:
+                                System.out.print("Введите тип кредитного счета: ");
+                                type = scannerAccount.nextLine();
+                                System.out.print("Введите процентную ставку: ");
+                                percent = Double.parseDouble(scannerAccount.nextLine());
+                                break;
+                            default:
+                                System.out.println("Введены некорретные данные!");
+                                continue;
+                        }
+
+                        System.out.print("Введите true или false, чтобы счет был активным или заблокированным: ");
+                        boolean active = Boolean.parseBoolean(scannerAccount.nextLine());
+
+                        System.out.print("Введите сумму счета: ");
+                        double balance = Double.parseDouble(scannerAccount.nextLine());
+
+                        System.out.print("Введите номер счета: ");
+                        String number = scannerAccount.nextLine();
+
+                        //проверяем, какой счет выбирали, и создаем соотв. счет
+                        switch (choseKind) {
+                            case 1:
+                                bankLogic.createCardAccount(identifier, active, balance, number, monthPayment);
+                                System.out.print("Счет успешно создан!");
+                                break;
+                            case 2:
+                                bankLogic.createDepositAccount(identifier, active, balance, number, type, percent);
+                                System.out.print("Счет успешно создан!");
+                                break;
+                            case 3:
+                                bankLogic.createCreditAccount(identifier, active, balance, number, type, percent);
+                                System.out.print("Счет успешно создан!");
+                                break;
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Введены некорретные данные!");
+                    }
+                    break;
+                case 3:
+                    //просмотр всех клиентов
+                    bankLogic.printClients(bankLogic.getClients());
+                    break;
+                case 4:
+                    //просмотр всех счетов
+                    bankLogic.printAccounts(bankLogic.getAccounts());
+                    break;
+                case 5:
+                    //блокировка и разблокировка счета
+                    Scanner scannerActive = new Scanner(System.in);
+
+                    System.out.println("\nВыберите ID клиента: ");
+                    bankLogic.printClients(bankLogic.getClients());
+                    int identifier = Integer.parseInt(scannerActive.nextLine());
+
+                    //проверка - если клиент не существует
+                    if (!bankLogic.ifClientExists(identifier)) {
+                        System.out.print("Клиент не существует!\n");
+                        break;
+                    }
+
+                    System.out.print("\nСчета клиента с именем '" + bankLogic.getNameOrTitleById(identifier) + "':\n");
+                    bankLogic.printAccounts(bankLogic.getAccountsOfPerson(bankLogic.getNameOrTitleById(identifier)));
+
+                    System.out.print("Введите номер счета: ");
+                    String number = scannerActive.nextLine();
+
+
+                    //проверка - если счет не существует
+                    if (!bankLogic.ifAccountNumberExists(number)) {
+                        System.out.print("Счет не существует!\n");
+                        break;
+                    }
+
+                    System.out.print("Введите новый статус: ");
+                    boolean status = Boolean.parseBoolean(scannerActive.nextLine());
+
+                    bankLogic.setActiveAccount(number, status);
+                    System.out.print("Установлен статус " + status + " для счета " + number + "!");
+                    break;
+                case 6:
+                    //поиск счетов по имени клиента
+                    try {
+                        Scanner scannerSearch = new Scanner(System.in);
+                        System.out.print("Введите имя (или название) клиента (или организации), счета которого необходимо вывести: ");
+                        String name = scannerSearch.nextLine();
+                        if (bankLogic.getAccountsOfPerson(name) != null)
+                            bankLogic.printAccounts(bankLogic.getAccountsOfPerson(name));
+                        else System.out.print("Клиент не существует!");
+                    } catch (Exception ex) {
+                        System.out.println("Введены некорретные данные!");
+                    }
+                    break;
+                case 7:
+                    //просмотр отсортированных счетов
+                    bankLogic.printAccounts(bankLogic.getSortedAccounts());
+                    break;
+                case 8:
+                    //просмотр суммы всех счетов
+                    System.out.print("Сумма всех счетов равна " + bankLogic.getSumAllAccounts() + ".");
+                    break;
+                case 9:
+                    //просмотр положительной и отрицательной сумм всех счетов
+                    System.out.print("Сумма положительных счетов равна " + bankLogic.getSumPositiveAccounts() +
+                            ".\nСумма отрицательных счетов равна " + bankLogic.getSumNegativeAccounts() + ".");
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Введены некорретные данные!");
+                    break;
+            }
         }
     }
 }

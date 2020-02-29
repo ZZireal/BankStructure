@@ -1,7 +1,11 @@
+package Entity;
+
+import Entity.Account;
+
 public class CardAccount extends Account {
     double monthPayment;
 
-    CardAccount(boolean active, double balance, String number, double monthPayment) {
+    public CardAccount(boolean active, double balance, String number, double monthPayment) {
         super(active, balance, number);
         this.monthPayment = monthPayment;
     }
@@ -18,6 +22,4 @@ public class CardAccount extends Account {
     public String toString() {
         return super.toString() + ", абоненская плата - '" + "'\n";
     }
-
-
 }

@@ -1,8 +1,12 @@
+package Entity;
+
+import Entity.Account;
+
 public class DepositAccount extends Account {
     private double percent;
     private String type;
 
-    DepositAccount(boolean active, double balance, String number, String type, double percent) {
+    public DepositAccount(boolean active, double balance, String number, String type, double percent) {
         super(active, balance, number);
         this.percent = percent;
         this.type = type;

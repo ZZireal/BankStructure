@@ -1,3 +1,7 @@
+package Entity;
+
+import Entity.*;
+
 abstract public class Account {
     private boolean active;
     private double balance;
@@ -32,7 +36,6 @@ abstract public class Account {
     public void setNumber(String number) {
         this.number = number;
     }
-
 
     @Override
     public String toString() {
