@@ -1,6 +1,9 @@
 package Entity;
 
-public class CardAccount extends Account implements MonthChangedBalance {
+import java.io.Serializable;
+
+public class CardAccount extends Account implements MonthChangedBalance, Serializable {
+
     private double monthPayment;
 
     public CardAccount(boolean active, double balance, String number, double monthPayment) {

@@ -1,6 +1,9 @@
 package Entity;
 
-abstract public class Account  {
+import java.io.Serializable;
+
+abstract public class Account implements Serializable {
+
     private boolean active;
     private double balance;
     private String number;

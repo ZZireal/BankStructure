@@ -1,31 +1,32 @@
 /*
 Формулировка задания:
 Счета.
-1. Клиент может иметь несколько счетов в банке. +
-2. Учитывать возможность блокировки/разблокировки счета. +
-3. Реализовать поиск и сортировку счетов. +
-4. Вычисление общей суммы по счетам. +
-5. Вычисление суммы по всем счетам, имеющим положительный и отрицательный балансы отдельно. +
+1. Клиент может иметь несколько счетов в банке.
+2. Учитывать возможность блокировки/разблокировки счета.
+3. Реализовать поиск и сортировку счетов.
+4. Вычисление общей суммы по счетам.
+5. Вычисление суммы по всем счетам, имеющим положительный и отрицательный балансы отдельно.
 
 Требования:
-Использовать возможности ООП: классы, наследование, полиморфизм, инкапсуляция. +
-- определить иерархию классов соответствующую вашей предметной области; +
-- каждый класс должен иметь отражающее смысл название и информативный состав; +
-- определить конструкторы и методы setТип(), getТип(), toString(), equals(); +
-- наследование должно применяться только тогда, когда это имеет смысл. +
+Использовать возможности ООП: классы, наследование, полиморфизм, инкапсуляция.
+- определить иерархию классов соответствующую вашей предметной области;
+- каждый класс должен иметь отражающее смысл название и информативный состав;
+- определить конструкторы и методы setТип(), getТип(), toString(), equals();
+- наследование должно применяться только тогда, когда это имеет смысл.
 
 
 Menu в класс работы с операциями, т.к. название.
-2-я лаба: 1) создать класс банк вместо Menu, заполнить листы объектами (). Записать в файл, прочитать с файла (2 метода), используя сериализацию и десириализацию.
-          2) список клиентов, которые есть у банка, записать в файл другой, но посимвольно, и прочитать.
+2-я лаба: 1) создать класс банк вместо Menu, заполнить листы объектами (). Записать в файл, прочитать с файла (2 метода), используя сериализацию и десириализацию. +
+          2) список клиентов, которые есть у банка, записать в файл другой, но в виде строки, и прочитать. +
           3) предусмотреть IO Exception, создать 1 класс, который будет наследоваться от Exception и наследовать лог. ошибку (нельзя, чтобы счет был отрицательным, выдать ошибку)
 */
 
+import java.io.IOException;
 import java.util.*;
 
 class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         BankLogic bankLogic = new BankLogic();
         Scanner scanner = new Scanner(System.in);
         bankLogic.initStartUsers();
@@ -43,6 +44,9 @@ class Main {
                             "8. Общая СУММА по счетам" + "\n" +
                             "9. СУММА по положительным и отрицательным счетам" + "\n" +
                             "10. Установить новый баланс спустя месяц" + "\n" +
+                            "11. Сериализовать лист счетов (побайтово) и лист клиентов (в виде строки)" + "\n" +
+                            "12. Десериализовать лист счетов (побайтово)" + "\n" +
+                            "13. Десериализовать и вывести лист клиентов (в виде строки)" + "\n" +
                             "0. Выйти" + "\n");
             int chose = scanner.nextInt();
             switch (chose) {
@@ -54,7 +58,7 @@ class Main {
                         int identifier = Integer.parseInt(scannerClient.nextLine());
 
                         //проверка - если клиент существует
-                        if (bankLogic.ifClientExists(identifier)) {
+                        if (bankLogic.isClientExists(identifier)) {
                             System.out.print("Клиент уже существует!\n");
                             break;
                         }
@@ -93,12 +97,12 @@ class Main {
                         //создание ID
                         Scanner scannerAccount = new Scanner(System.in);
                         System.out.print("\nВыберите ID клиента: ");
-                        bankLogic.printClients(bankLogic.getClients());
+                        bankLogic.printClients(bankLogic.getClientList());
 
                         int identifier = Integer.parseInt(scannerAccount.nextLine());
 
                         //проверка - если клиент не существует
-                        if (!bankLogic.ifClientExists(identifier)) {
+                        if (!bankLogic.isClientExists(identifier)) {
                             System.out.print("Клиент не существует!\n");
                             break;
                         }
@@ -141,6 +145,12 @@ class Main {
                         System.out.print("Введите номер счета: ");
                         String number = scannerAccount.nextLine();
 
+                        //проверка - если счет не существует
+                        if (bankLogic.isAccountNumberExists(number)) {
+                            System.out.print("Счет существует!\n");
+                            break;
+                        }
+
                         //проверяем, какой счет выбирали, и создаем соотв. счет
                         switch (choseKind) {
                             case 1:
@@ -162,44 +172,47 @@ class Main {
                     break;
                 case 3:
                     //просмотр всех клиентов
-                    bankLogic.printClients(bankLogic.getClients());
+                    bankLogic.printClients(bankLogic.getClientList());
                     break;
                 case 4:
                     //просмотр всех счетов
-                    bankLogic.printAccounts(bankLogic.getAccounts());
+                    bankLogic.printAccounts(bankLogic.getAccountList());
                     break;
                 case 5:
                     //блокировка и разблокировка счета
-                    Scanner scannerActive = new Scanner(System.in);
+                    try {
+                        Scanner scannerActive = new Scanner(System.in);
 
-                    System.out.println("\nВыберите ID клиента: ");
-                    bankLogic.printClients(bankLogic.getClients());
-                    int identifier = Integer.parseInt(scannerActive.nextLine());
+                        System.out.println("\nВыберите ID клиента: ");
+                        bankLogic.printClients(bankLogic.getClientList());
+                        int identifier = Integer.parseInt(scannerActive.nextLine());
 
-                    //проверка - если клиент не существует
-                    if (!bankLogic.ifClientExists(identifier)) {
-                        System.out.print("Клиент не существует!\n");
-                        break;
+                        //проверка - если клиент не существует
+                        if (!bankLogic.isClientExists(identifier)) {
+                            System.out.print("Клиент не существует!\n");
+                            break;
+                        }
+
+                        System.out.print("\nСчета клиента с именем '" + bankLogic.getNameOrTitleById(identifier) + "':\n");
+                        bankLogic.printAccounts(bankLogic.getAccountsOfPerson(bankLogic.getNameOrTitleById(identifier)));
+
+                        System.out.print("Введите номер счета: ");
+                        String number = scannerActive.nextLine();
+
+                        //проверка - если счет не существует
+                        if (!bankLogic.isAccountNumberExists(number)) {
+                            System.out.print("Счет не существует!\n");
+                            break;
+                        }
+
+                        System.out.print("Введите новый статус: ");
+                        boolean status = Boolean.parseBoolean(scannerActive.nextLine());
+
+                        bankLogic.setActiveAccount(number, status);
+                        System.out.print("Установлен статус " + status + " для счета " + number + "!");
+                    } catch (Exception ex) {
+                        System.out.println("Введены некорретные данные!");
                     }
-
-                    System.out.print("\nСчета клиента с именем '" + bankLogic.getNameOrTitleById(identifier) + "':\n");
-                    bankLogic.printAccounts(bankLogic.getAccountsOfPerson(bankLogic.getNameOrTitleById(identifier)));
-
-                    System.out.print("Введите номер счета: ");
-                    String number = scannerActive.nextLine();
-
-
-                    //проверка - если счет не существует
-                    if (!bankLogic.ifAccountNumberExists(number)) {
-                        System.out.print("Счет не существует!\n");
-                        break;
-                    }
-
-                    System.out.print("Введите новый статус: ");
-                    boolean status = Boolean.parseBoolean(scannerActive.nextLine());
-
-                    bankLogic.setActiveAccount(number, status);
-                    System.out.print("Установлен статус " + status + " для счета " + number + "!");
                     break;
                 case 6:
                     //поиск счетов по имени клиента
@@ -233,6 +246,21 @@ class Main {
                     //установить новый баланс спустя месяц
                     bankLogic.setMonthChangedBalance();
                     System.out.print("Баланс всех счетов пересчитан и изменен!");
+                    break;
+                case 11:
+                    //сериализация
+                    bankLogic.serializeAccountList(bankLogic.getAccountList());
+                    bankLogic.serializeClientList(bankLogic.getClientList());
+                    System.out.print("\nЛист счетов и клиентов сериализован!");
+                    break;
+                case 12:
+                    //десериализация
+                    bankLogic.addInAccountList(bankLogic.getDeserializeAccountList());
+                    System.out.print("\nЛист счетов десереализован!");
+                    break;
+                case 13:
+                    //десериализовать и вывести десериализованные данные (в виде строки)
+                    System.out.println(bankLogic.getDeserializeClientList());
                     break;
                 default:
                     System.out.println("Введены некорретные данные!");

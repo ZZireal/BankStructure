@@ -1,5 +1,6 @@
 import Entity.*;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,7 +11,7 @@ class BankLogic {
     private List<Account> accountList = new ArrayList<>();
 
     //инициализация клиентов и счетов для примера
-    void initStartUsers() {
+    void initStartUsers() throws IOException, ClassNotFoundException {
         //создание клиентов
         Client cl1 = new PersonClient(1, "физическое лицо", "Генри Кавилл", "1985-05-09");
         Client cl2 = new CompanyClient(2, "юридическое лицо", "Bartolomeo Inc.", "1996-07-14");
@@ -51,8 +52,53 @@ class BankLogic {
         clientList.add(cl4);
     }
 
+    //добавить новый лист в accountList
+    void addInAccountList (List<Account> accountListNew) {
+        accountList.addAll(accountListNew);
+    }
+
+    //сериализация листа счетов побайтово
+    void serializeAccountList (List<Account> accountList) throws IOException {
+        //открыть 2 потока для сериализации
+        FileOutputStream fileOutputStreamAccountList = new FileOutputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\accountList.txt");
+        ObjectOutputStream objectOutputStreamAccountList = new ObjectOutputStream(fileOutputStreamAccountList);
+        //записать в файл
+        objectOutputStreamAccountList.writeObject(accountList);
+        //закрыть поток и освободить ресурсы
+        objectOutputStreamAccountList.close();
+    }
+
+    //десериализация листа счетов побайтово
+    List<Account> getDeserializeAccountList () throws IOException, ClassNotFoundException {
+        //открыть 2 потока для десериализации
+        FileInputStream fileInputStreamAccountList = new FileInputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\accountList.txt");
+        ObjectInputStream objectInputStreamAccountList = new ObjectInputStream(fileInputStreamAccountList);
+        //записать из файла в лист счетов
+        return (List<Account>) objectInputStreamAccountList.readObject();
+    }
+
+    //сериализация листа клиентов в виде строки
+    void serializeClientList(List<Client> clientList) throws IOException {
+        //открыть 2 потока для сериализации
+        FileOutputStream fileOutputStreamClientList = new FileOutputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\clientList.txt");
+        ObjectOutputStream objectOutputStreamClientList = new ObjectOutputStream(fileOutputStreamClientList);
+        //записать в файл
+        objectOutputStreamClientList.writeUTF(clientList.toString());
+        //закрыть поток и освободить ресурсы
+        objectOutputStreamClientList.close();
+    }
+
+    //десериализация листа клиентов в виде строки
+    String getDeserializeClientList () throws IOException {
+        //открыть 2 потока для десериализации
+        FileInputStream fileInputStreamClientList = new FileInputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\clientList.txt");
+        ObjectInputStream objectInputStreamClientList = new ObjectInputStream(fileInputStreamClientList);
+        //записать из файла в лист клиентов
+        return objectInputStreamClientList.readUTF();
+    }
+
     //проверка существует ли клиент с данным идентификатором
-    boolean ifClientExists(int identifier) {
+    boolean isClientExists(int identifier) {
         boolean exist = false;
         for (Client client : clientList) {
             if (identifier == client.getIdentifier()) {
@@ -64,7 +110,7 @@ class BankLogic {
     }
 
     //проверка существует ли счет с данным номером
-    boolean ifAccountNumberExists(String number) {
+    boolean isAccountNumberExists(String number) {
         boolean exist = false;
         for (Account account : accountList) {
             if (number.equals(account.getNumber())) {
@@ -82,7 +128,7 @@ class BankLogic {
         clientList.add(client);
     }
 
-    //создание клиента как юридического
+    //создание клиента как юридического лица
     void createCompanyClient(int identifier, String type, String name, String dateOfRegistration) {
         // scanner in main, принимает объекты (везде, где сканнер так седлать)
         Client client = new CompanyClient(identifier, type, name, dateOfRegistration);
@@ -126,7 +172,7 @@ class BankLogic {
     }
 
     //вернуть лист клиентов
-    List<Client> getClients() {
+    List<Client> getClientList() {
         return clientList;
     }
 
@@ -138,7 +184,7 @@ class BankLogic {
     }
 
     //вернуть лист счетов
-    List<Account> getAccounts() {
+    List<Account> getAccountList() {
         return accountList;
     }
 

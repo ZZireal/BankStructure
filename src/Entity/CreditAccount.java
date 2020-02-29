@@ -2,7 +2,10 @@ package Entity;
 
 import Entity.Account;
 
-public class CreditAccount extends Account implements MonthChangedBalance {
+import java.io.Serializable;
+
+public class CreditAccount extends Account implements MonthChangedBalance, Serializable {
+
     private double percent;
     private String type;
 
