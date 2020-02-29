@@ -18,15 +18,17 @@
 Menu в класс работы с операциями, т.к. название.
 2-я лаба: 1) создать класс банк вместо Menu, заполнить листы объектами (). Записать в файл, прочитать с файла (2 метода), используя сериализацию и десириализацию. +
           2) список клиентов, которые есть у банка, записать в файл другой, но в виде строки, и прочитать. +
-          3) предусмотреть IO Exception, создать 1 класс, который будет наследоваться от Exception и наследовать лог. ошибку (нельзя, чтобы счет был отрицательным, выдать ошибку)
+          3) предусмотреть IO Exception, создать 1 класс, который будет наследоваться от Exception и наследовать лог. ошибку (нельзя, чтобы счет был отрицательным, выдать ошибку) +
 */
+
+import Entity.NegativeCardAccountBalanceException;
 
 import java.io.IOException;
 import java.util.*;
 
 class Main {
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, NegativeCardAccountBalanceException {
         BankLogic bankLogic = new BankLogic();
         Scanner scanner = new Scanner(System.in);
         bankLogic.initStartUsers();
@@ -96,7 +98,7 @@ class Main {
                     try {
                         //создание ID
                         Scanner scannerAccount = new Scanner(System.in);
-                        System.out.print("\nВыберите ID клиента: ");
+                        System.out.println("\nВыберите ID клиента: ");
                         bankLogic.printClients(bankLogic.getClientList());
 
                         int identifier = Integer.parseInt(scannerAccount.nextLine());
@@ -141,11 +143,13 @@ class Main {
 
                         System.out.print("Введите сумму счета: ");
                         double balance = Double.parseDouble(scannerAccount.nextLine());
+                        //отлавливаю пользовательское исключение (баланс карточного счета не может быть меньше 0)
+                        if (choseKind == 1 && balance < 0) throw new NegativeCardAccountBalanceException(balance);
 
                         System.out.print("Введите номер счета: ");
                         String number = scannerAccount.nextLine();
 
-                        //проверка - если счет не существует
+                        //проверка - если счет существует
                         if (bankLogic.isAccountNumberExists(number)) {
                             System.out.print("Счет существует!\n");
                             break;
@@ -166,6 +170,8 @@ class Main {
                                 System.out.print("Счет успешно создан!");
                                 break;
                         }
+                    } catch (NegativeCardAccountBalanceException ex) {
+                        System.out.println("Отловлено пользовательское исключение! " + ex.toString());
                     } catch (Exception ex) {
                         System.out.println("Введены некорретные данные!");
                     }

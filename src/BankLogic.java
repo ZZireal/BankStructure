@@ -11,7 +11,7 @@ class BankLogic {
     private List<Account> accountList = new ArrayList<>();
 
     //инициализация клиентов и счетов для примера
-    void initStartUsers() throws IOException, ClassNotFoundException {
+    void initStartUsers() throws IOException, ClassNotFoundException, NegativeCardAccountBalanceException {
         //создание клиентов
         Client cl1 = new PersonClient(1, "физическое лицо", "Генри Кавилл", "1985-05-09");
         Client cl2 = new CompanyClient(2, "юридическое лицо", "Bartolomeo Inc.", "1996-07-14");
@@ -25,6 +25,7 @@ class BankLogic {
         Account acc22 = new CreditAccount(true, 1000, "CR1", "краткосрочный", 10);
         Account acc3 = new CardAccount(true, 305.15, "CA31", 0);
         Account acc4 = new CardAccount(false, 125.15, "CA41", 5.5);
+        //if (acc4.getBalance() < 0) throw new NegativeArraySizeException();
         Account acc44 = new CreditAccount(true, 1500, "CR42", "долгосрочный", 20);
 
         //добавление счетов в лист
@@ -53,12 +54,12 @@ class BankLogic {
     }
 
     //добавить новый лист в accountList
-    void addInAccountList (List<Account> accountListNew) {
+    void addInAccountList(List<Account> accountListNew) {
         accountList.addAll(accountListNew);
     }
 
     //сериализация листа счетов побайтово
-    void serializeAccountList (List<Account> accountList) throws IOException {
+    void serializeAccountList(List<Account> accountList) throws IOException {
         //открыть 2 потока для сериализации
         FileOutputStream fileOutputStreamAccountList = new FileOutputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\accountList.txt");
         ObjectOutputStream objectOutputStreamAccountList = new ObjectOutputStream(fileOutputStreamAccountList);
@@ -69,7 +70,7 @@ class BankLogic {
     }
 
     //десериализация листа счетов побайтово
-    List<Account> getDeserializeAccountList () throws IOException, ClassNotFoundException {
+    List<Account> getDeserializeAccountList() throws IOException, ClassNotFoundException {
         //открыть 2 потока для десериализации
         FileInputStream fileInputStreamAccountList = new FileInputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\accountList.txt");
         ObjectInputStream objectInputStreamAccountList = new ObjectInputStream(fileInputStreamAccountList);
@@ -89,7 +90,7 @@ class BankLogic {
     }
 
     //десериализация листа клиентов в виде строки
-    String getDeserializeClientList () throws IOException {
+    String getDeserializeClientList() throws IOException {
         //открыть 2 потока для десериализации
         FileInputStream fileInputStreamClientList = new FileInputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\clientList.txt");
         ObjectInputStream objectInputStreamClientList = new ObjectInputStream(fileInputStreamClientList);
@@ -148,7 +149,7 @@ class BankLogic {
     }
 
     //создание карточного счета
-    void createCardAccount(int identifier, boolean active, double balance, String number, double monthPayment) {
+    void createCardAccount(int identifier, boolean active, double balance, String number, double monthPayment) throws NegativeCardAccountBalanceException {
         for (Client client : clientList) {
             if (identifier == client.getIdentifier()) {
                 Account acc = new CardAccount(active, balance, number, monthPayment);
@@ -285,7 +286,7 @@ class BankLogic {
     }
 
     //установить новый баланс спустя месяц
-    void setMonthChangedBalance () {
+    void setMonthChangedBalance() {
         for (Account account : accountList) {
             if (account instanceof CardAccount) {
                 ((CardAccount) account).setMonthChangedBalance(account);
