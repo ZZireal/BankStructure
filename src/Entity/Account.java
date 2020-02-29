@@ -1,8 +1,6 @@
 package Entity;
 
-import Entity.*;
-
-abstract public class Account {
+abstract public class Account  {
     private boolean active;
     private double balance;
     private String number;

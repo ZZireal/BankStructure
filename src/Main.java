@@ -42,6 +42,7 @@ class Main {
                             "7. Просмотреть отсортированные счета" + "\n" +
                             "8. Общая СУММА по счетам" + "\n" +
                             "9. СУММА по положительным и отрицательным счетам" + "\n" +
+                            "10. Установить новый баланс спустя месяц" + "\n" +
                             "0. Выйти" + "\n");
             int chose = scanner.nextInt();
             switch (chose) {
@@ -228,6 +229,11 @@ class Main {
                     break;
                 case 0:
                     return;
+                case 10:
+                    //установить новый баланс спустя месяц
+                    bankLogic.setMonthChangedBalance();
+                    System.out.print("Баланс всех счетов пересчитан и изменен!");
+                    break;
                 default:
                     System.out.println("Введены некорретные данные!");
                     break;

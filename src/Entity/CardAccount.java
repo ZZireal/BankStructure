@@ -1,9 +1,7 @@
 package Entity;
 
-import Entity.Account;
-
-public class CardAccount extends Account {
-    double monthPayment;
+public class CardAccount extends Account implements MonthChangedBalance {
+    private double monthPayment;
 
     public CardAccount(boolean active, double balance, String number, double monthPayment) {
         super(active, balance, number);
@@ -20,6 +18,11 @@ public class CardAccount extends Account {
 
     @Override
     public String toString() {
-        return super.toString() + ", абоненская плата - '" + "'\n";
+        return super.toString() + ", абоненская плата - '" + monthPayment + "'\n";
+    }
+
+    @Override
+    public void setMonthChangedBalance(Account account) {
+        account.setBalance(account.getBalance() - this.monthPayment);
     }
 }

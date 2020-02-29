@@ -13,32 +13,38 @@ class BankLogic {
     void initStartUsers() {
         //создание клиентов
         Client cl1 = new PersonClient(1, "физическое лицо", "Генри Кавилл", "1985-05-09");
-        Client cl2 = new CompanyClient(2, "юридичесое лицо", "Bartolomeo Inc.", "1996-07-14");
+        Client cl2 = new CompanyClient(2, "юридическое лицо", "Bartolomeo Inc.", "1996-07-14");
         Client cl3 = new PersonClient(3, "физическое лицо", "Леонардо Ди Каприо", "1976-03-27");
         Client cl4 = new PersonClient(4, "физическое лицо", "Двадцать Пятый Баам", "1976-03-27");
 
         //создание счетов
-        Account acc1 = new DepositAccount(true, 100.56, "AT42552003", "отзывный", 0.8);
-        Account acc11 = new DepositAccount(true, -120.67, "BT42555290", "безотзывный", 2.5);
-        Account acc2 = new DepositAccount(true, 200.90, "CT42346000", "отзывный", 0.6);
-        Account acc3 = new CardAccount(true, 305.15, "UN54663002", 0);
-        Account acc4 = new CardAccount(false, 125.15, "BG53468802", 5.5);
+        Account acc1 = new DepositAccount(true, 100.56, "DA11", "отзывный", 0.8);
+        Account acc11 = new DepositAccount(true, -120.67, "DA12", "безотзывный", 2.5);
+        Account acc2 = new DepositAccount(true, 200.90, "DA21", "отзывный", 0.6);
+        Account acc22 = new CreditAccount(true, 1000, "CR1", "краткосрочный", 10);
+        Account acc3 = new CardAccount(true, 305.15, "CA31", 0);
+        Account acc4 = new CardAccount(false, 125.15, "CA41", 5.5);
+        Account acc44 = new CreditAccount(true, 1500, "CR42", "долгосрочный", 20);
 
         //добавление счетов в лист
         accountList.add(acc1);
         accountList.add(acc11);
         accountList.add(acc2);
+        accountList.add(acc22);
         accountList.add(acc3);
         accountList.add(acc4);
+        accountList.add(acc44);
 
         //привязка счетов к клиентам
         cl1.addAccount(acc1);
         cl1.addAccount(acc11);
         cl2.addAccount(acc2);
+        cl2.addAccount(acc22);
         cl3.addAccount(acc3);
         cl4.addAccount(acc4);
+        cl4.addAccount(acc44);
 
-        //добавление клиентов с привязанными счетами в лист
+        //добавление клиентов в лист
         clientList.add(cl1);
         clientList.add(cl2);
         clientList.add(cl3);
@@ -47,7 +53,6 @@ class BankLogic {
 
     //проверка существует ли клиент с данным идентификатором
     boolean ifClientExists(int identifier) {
-        //проверка, если клиент существует - остановить метод
         boolean exist = false;
         for (Client client : clientList) {
             if (identifier == client.getIdentifier()) {
@@ -60,7 +65,6 @@ class BankLogic {
 
     //проверка существует ли счет с данным номером
     boolean ifAccountNumberExists(String number) {
-        //проверка, если клиент существует - остановить метод
         boolean exist = false;
         for (Account account : accountList) {
             if (number.equals(account.getNumber())) {
@@ -233,6 +237,19 @@ class BankLogic {
         }
         return null;
     }
+
+    //установить новый баланс спустя месяц
+    void setMonthChangedBalance () {
+        for (Account account : accountList) {
+            if (account instanceof CardAccount) {
+                ((CardAccount) account).setMonthChangedBalance(account);
+            }
+            if (account instanceof DepositAccount) {
+                ((DepositAccount) account).setMonthChangedBalance(account);
+            }
+            if (account instanceof CreditAccount) {
+                ((CreditAccount) account).setMonthChangedBalance(account);
+            }
+        }
+    }
 }
-
-

@@ -2,7 +2,7 @@ package Entity;
 
 import Entity.Account;
 
-public class DepositAccount extends Account {
+public class DepositAccount extends Account implements MonthChangedBalance {
     private double percent;
     private String type;
 
@@ -30,6 +30,11 @@ public class DepositAccount extends Account {
 
     @Override
     public String toString() {
-        return super.toString() + ", тип - " + type + "', процентная ставка - '" + percent +  "'\n";
+        return super.toString() + ", тип - " + type + "', процентная ставка - '" + percent + "'\n";
+    }
+
+    @Override
+    public void setMonthChangedBalance(Account account) {
+            account.setBalance(account.getBalance() + account.getBalance() * this.percent * 0.01);
     }
 }
