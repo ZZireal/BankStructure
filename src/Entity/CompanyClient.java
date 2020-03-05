@@ -9,13 +9,11 @@ import java.util.List;
 public class CompanyClient extends Client {
     private String CompanyTitle;
     private String dateOfRegistration;
-    private List<Account> accountList;
 
     public CompanyClient(int identifier, String type, String CompanyTitle, String dateOfRegistration) {
         super(identifier, type);
         this.CompanyTitle = CompanyTitle;
         this.dateOfRegistration = dateOfRegistration;
-        this.accountList = new ArrayList<>();
     }
 
     public String getCompanyTitle() {
@@ -34,12 +32,6 @@ public class CompanyClient extends Client {
         this.dateOfRegistration = dateOfBirth;
     }
 
-    public List<Account> getAccountList() {
-        return accountList;
-    }
-
-    public void addAccount(Account account) { this.accountList.add(account); }
-
     @Override
     public String toString() {
         return super.toString() + " " + "Информация о клиенте: " +
@@ -50,7 +42,7 @@ public class CompanyClient extends Client {
 
     public String print() {
         String AccountPrinted = "";
-        for (Account account : accountList) {
+        for (Account account : super.getAccountList()) {
             AccountPrinted = account + AccountPrinted;
         }
         return AccountPrinted;

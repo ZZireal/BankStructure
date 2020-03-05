@@ -7,8 +7,24 @@ import java.util.List;
 
 class BankLogic {
 
+    public BankLogic(List<Client> clientList, List<Account> accountList) {
+        this.clientList = clientList;
+        this.accountList = accountList;
+    }
+
+    public BankLogic() {
+    }
+
     private List<Client> clientList = new ArrayList<>();
     private List<Account> accountList = new ArrayList<>();
+
+    public void setClientList(List<Client> clientList) {
+        this.clientList = clientList;
+    }
+
+    public void setAccountList(List<Account> accountList) {
+        this.accountList = accountList;
+    }
 
     //инициализация клиентов и счетов для примера
     void initStartUsers() throws IOException, ClassNotFoundException, NegativeCardAccountBalanceException {
@@ -24,8 +40,17 @@ class BankLogic {
         Account acc2 = new DepositAccount(true, 200.90, "DA21", "отзывный", 0.6);
         Account acc22 = new CreditAccount(true, 1000, "CR1", "краткосрочный", 10);
         Account acc3 = new CardAccount(true, 305.15, "CA31", 0);
-        Account acc4 = new CardAccount(false, 125.15, "CA41", 5.5);
-        //if (acc4.getBalance() < 0) throw new NegativeArraySizeException();
+
+        //пример исключения
+        try {
+            Account acc4 = new CardAccount(false, -125.15, "CA41", 5.5);
+            accountList.add(acc4);
+            cl4.addAccount(acc4);
+            if (acc4.getBalance() < 0) throw new NegativeCardAccountBalanceException(acc4.getBalance());
+        } catch (NegativeCardAccountBalanceException ex) {
+            System.out.println(ex.toString());
+        }
+
         Account acc44 = new CreditAccount(true, 1500, "CR42", "долгосрочный", 20);
 
         //добавление счетов в лист
@@ -34,7 +59,6 @@ class BankLogic {
         accountList.add(acc2);
         accountList.add(acc22);
         accountList.add(acc3);
-        accountList.add(acc4);
         accountList.add(acc44);
 
         //привязка счетов к клиентам
@@ -43,7 +67,6 @@ class BankLogic {
         cl2.addAccount(acc2);
         cl2.addAccount(acc22);
         cl3.addAccount(acc3);
-        cl4.addAccount(acc4);
         cl4.addAccount(acc44);
 
         //добавление клиентов в лист
@@ -56,46 +79,6 @@ class BankLogic {
     //добавить новый лист в accountList
     void addInAccountList(List<Account> accountListNew) {
         accountList.addAll(accountListNew);
-    }
-
-    //сериализация листа счетов побайтово
-    void serializeAccountList(List<Account> accountList) throws IOException {
-        //открыть 2 потока для сериализации
-        FileOutputStream fileOutputStreamAccountList = new FileOutputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\accountList.txt");
-        ObjectOutputStream objectOutputStreamAccountList = new ObjectOutputStream(fileOutputStreamAccountList);
-        //записать в файл
-        objectOutputStreamAccountList.writeObject(accountList);
-        //закрыть поток и освободить ресурсы
-        objectOutputStreamAccountList.close();
-    }
-
-    //десериализация листа счетов побайтово
-    List<Account> getDeserializeAccountList() throws IOException, ClassNotFoundException {
-        //открыть 2 потока для десериализации
-        FileInputStream fileInputStreamAccountList = new FileInputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\accountList.txt");
-        ObjectInputStream objectInputStreamAccountList = new ObjectInputStream(fileInputStreamAccountList);
-        //записать из файла в лист счетов
-        return (List<Account>) objectInputStreamAccountList.readObject();
-    }
-
-    //сериализация листа клиентов в виде строки
-    void serializeClientList(List<Client> clientList) throws IOException {
-        //открыть 2 потока для сериализации
-        FileOutputStream fileOutputStreamClientList = new FileOutputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\clientList.txt");
-        ObjectOutputStream objectOutputStreamClientList = new ObjectOutputStream(fileOutputStreamClientList);
-        //записать в файл
-        objectOutputStreamClientList.writeUTF(clientList.toString());
-        //закрыть поток и освободить ресурсы
-        objectOutputStreamClientList.close();
-    }
-
-    //десериализация листа клиентов в виде строки
-    String getDeserializeClientList() throws IOException {
-        //открыть 2 потока для десериализации
-        FileInputStream fileInputStreamClientList = new FileInputStream("C:\\Users\\zzire\\Desktop\\JavaLabs\\clientList.txt");
-        ObjectInputStream objectInputStreamClientList = new ObjectInputStream(fileInputStreamClientList);
-        //записать из файла в лист клиентов
-        return objectInputStreamClientList.readUTF();
     }
 
     //проверка существует ли клиент с данным идентификатором
@@ -206,25 +189,12 @@ class BankLogic {
 
     //вернуть имя (название) клиента
     String getNameOrTitleById(int identifier) {
-        List<PersonClient> personClientList = new ArrayList<>();
-        List<CompanyClient> companyClientList = new ArrayList<>();
-
         for (Client client : clientList) {
-            if (client instanceof PersonClient) {
-                personClientList.add((PersonClient) client);
+            if (client instanceof PersonClient && identifier == client.getIdentifier()) {
+                return ((PersonClient) client).getPersonName();
             }
-            if (client instanceof CompanyClient) {
-                companyClientList.add((CompanyClient) client);
-            }
-        }
-        for (PersonClient personClient : personClientList) {
-            if (identifier == personClient.getIdentifier()) {
-                return personClient.getPersonName();
-            }
-        }
-        for (CompanyClient companyClient : companyClientList) {
-            if (identifier == companyClient.getIdentifier()) {
-                return companyClient.getCompanyTitle();
+            if (client instanceof CompanyClient && identifier == client.getIdentifier())  {
+                return ((CompanyClient) client).getCompanyTitle();
             }
         }
         return null;

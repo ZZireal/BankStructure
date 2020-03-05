@@ -5,10 +5,10 @@ public class NegativeCardAccountBalanceException extends Exception {
     private double balanceException;
 
     public NegativeCardAccountBalanceException(double balance) {
-        balanceException = balance;
+        this.balanceException = balance;
     }
 
     public String toString() {
-        return "Баланс не должен быть отрицательным (" + balanceException + ").";
+        return "Пользовательское исключение! Баланс не должен быть отрицательным (" + balanceException + " < 0).";
     }
 }
